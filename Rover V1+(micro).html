@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+      <style>
+        button { padding: 15px; margin: 5px; font-size: 20px;}
+      </style>
+    </head>
+    <body>
+      <h1>ESP8266 Robot COntroller</h1>
+      <button data-command = "forward" >Forward</button><br>
+      <button data-command = "backward" >Backward</button><br>
+      <button data-command = "left" >Left</button><br>
+      <button data-command = "right">Right</button><br>
+      
+
+      <script>
+        var socket = new WebSocket("ws://192.168.43.57:81/"); //ESP's IP 36 instead of 57 for (type C)
+        function sendCommand(command){
+          socket.send(command);
+        }
+
+        function setupButtons(){
+          let buttons = document.querySelectorAll("button");
+          buttons.forEach(button => {
+            button.addEventListener("mousedown", () => sendCommand(button.dataset.command));
+            button.addEventListener("mouseup", () => sendCommand('stop'));
+            button.addEventListener("touchstart", (e) => {
+              e.preventDefault(); //prevents accidental scrolling
+              sendCommand(button.dataset.command);
+            });
+            button.addEventListener('touchend', () => sendCommand('stop'));
+          });
+        }
+
+        window.onload = setupButtons;
+      </script>
+    </body>
+    </html>
